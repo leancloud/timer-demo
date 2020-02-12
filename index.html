@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <title>待办事项</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+  </head>
+  <body>
+    <div id="app">
+      <h2>新建 Todo</h2>
+      <form @submit.prevent="add">
+        <label>
+          标题
+          <input type="text" v-model="newTodo.title" required />
+        </label>
+        <label>
+          日期
+          <input type="date" v-model="newTodo.dueDate" required />
+        </label>
+        <label>
+          时间
+          <input type="time" v-model="newTodo.dueTime" required />
+        </label>
+        <button type="submit">创建</button>
+      </form>
+      <h2>Todo 列表</h2>
+      <ul>
+        <li v-for="todo in todos" :key="todo.id">
+          <input
+            type="checkbox"
+            :checked="todo.get('completed')"
+            @change="
+              event => {
+                toggleCompleted(event, todo);
+              }
+            "
+          />
+          <span>{{ todo.get("title") }}</span>
+          <span>{{ todo.get("due").toLocaleString("zh-CN") }}</span>
+          <button @click="remove(todo)">删除</button>
+        </li>
+      </ul>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/leancloud-storage@4.2.0/dist/av-min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.11/dist/vue.min.js"></script>
+    <script>
+      const app = new Vue({
+        el: "#app",
+        data: {
+          todos: [],
+          newTodo: {
+            title: "",
+            dueDate: "",
+            dueTime: ""
+          }
+        },
+        methods: {
+          fetchTodos() {
+            const todoQuery = new AV.Query("Todo");
+            todoQuery
+              .ascending("due")
+              .find()
+              .then(todos => {
+                this.todos = todos;
+              });
+          },
+          add() {
+            const { title, dueDate, dueTime } = this.newTodo;
+            const due = new Date(
+              dueDate.slice(0, 4),
+              dueDate.slice(5, 7) - 1,
+              dueDate.slice(8, 10),
+              dueTime.slice(0, 2),
+              dueTime.slice(3, 5)
+            );
+            const todo = new AV.Object("Todo");
+            todo
+              .set("title", title)
+              .set("due", due)
+              .set("completed", false)
+              .save()
+              .then(() => {
+                this.newTodo = {
+                  title: "",
+                  dueDate: "",
+                  dueTime: ""
+                };
+                this.fetchTodos();
+              });
+          },
+          toggleCompleted(event, todo) {
+            todo
+              .set("completed", event.target.checked)
+              .save()
+              .then(this.fetchTodos);
+          },
+          remove(todo) {
+            todo.destroy().then(this.fetchTodos);
+          }
+        },
+        created() {
+          AV.init({
+            appId: "", // 你的 AppID
+            appKey: "" // 你的 AppKey
+          });
+          this.fetchTodos();
+        }
+      });
+    </script>
+  </body>
+</html>

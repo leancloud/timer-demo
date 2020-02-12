@@ -1,0 +1,15 @@
+{
+  "name": "timer-demo",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "@sendgrid/mail": "^6.5.1",
+    "express": "^4.17.1",
+    "leancloud-storage": "^4.2.0",
+    "leanengine": "^3.5.0"
+  },
+  "engines": {
+    "node": "*"
+  }
+}
