@@ -101,7 +101,8 @@
         created() {
           AV.init({
             appId: "", // 你的 AppID
-            appKey: "" // 你的 AppKey
+            appKey: "", // 你的 AppKey
+            serverURLs: "" // 你的 REST API 服务器地址
           });
           this.fetchTodos();
         }
