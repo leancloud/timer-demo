@@ -5,7 +5,7 @@
   },
   "dependencies": {
     "@sendgrid/mail": "^6.5.1",
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "leancloud-storage": "^4.2.0",
     "leanengine": "^3.5.0"
   },
